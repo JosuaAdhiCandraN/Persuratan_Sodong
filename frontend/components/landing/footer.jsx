@@ -10,9 +10,10 @@ export function Footer() {
           <div className="space-y-4">
             <div className="flex items-center space-x-3">
               <Image
-                src="/Kabupaten_Pemalang.png"
+                // src="/Kabupaten_Pemalang.png"
+                src={"/logo-sodong.png"}
                 alt="Logo UGM"
-                className="w-10"
+                className="w-24"
                 width={720} // Lebar dasar untuk rasio aspek
                 height={720} // Tinggi dasar untuk rasio aspek
               />{" "}
