@@ -7,6 +7,7 @@ import { WargaModule } from './warga/warga.module';
 import { SuratTemplateModule } from './surat/surat-template.module';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
+import { SuratModule } from './surat/surat.module';
 
 @Module({
   imports: [
@@ -15,7 +16,8 @@ import { UserModule } from './user/user.module';
     WargaModule,
     SuratTemplateModule,
     AuthModule, 
-    UserModule
+    UserModule,
+    SuratModule
   ],
   controllers: [AppController],
   providers: [AppService],
