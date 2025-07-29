@@ -34,23 +34,43 @@ export default function LoginPage() {
     setError("");
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError("");
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  setLoading(true);
+  setError("");
 
-    // Simulasi login
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+  try {
+    const res = await fetch("http://localhost:5000/auth/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        name: formData.username,  // sesuai DTO backend
+        password: formData.password,
+      }),
+    });
 
-    if (formData.username === "admin" && formData.password === "admin123") {
-      // Redirect ke dashboard
-      window.location.href = "/dashboard";
-    } else {
-      setError("Username atau password salah");
+    if (!res.ok) {
+      const errorData = await res.json();
+      throw new Error(errorData.message || "Gagal login");
     }
 
+    const data = await res.json();
+    const token = data.access_token;
+
+    // Simpan token ke localStorage / cookie
+    localStorage.setItem("token", token);
+
+    // Redirect ke dashboard
+    window.location.href = "/persuratan";
+  } catch (err) {
+    setError(err.message);
+  } finally {
     setLoading(false);
-  };
+  }
+};
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-white flex items-center justify-center p-4">
