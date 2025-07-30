@@ -1,15 +1,22 @@
-import { Controller, Get, Param, NotFoundException } from '@nestjs/common';
+import { Controller, Get, Param, Query, NotFoundException } from '@nestjs/common';
 import { WargaService } from './warga.service';
 import { SuratTemplateService } from '../surat/surat-template.service';
 
-@Controller('surat')
+@Controller() // ❗ Tanpa prefix => route bebas /warga, /surat/...
 export class WargaController {
   constructor(
     private readonly wargaService: WargaService,
     private readonly suratTemplateService: SuratTemplateService,
   ) {}
 
-  @Get(':jenisSurat/:nik')
+  // ✅ GET /warga?limit=10
+  @Get('warga')
+  async getAllWarga() {
+    return this.wargaService.findAll();
+  }
+
+  // ✅ GET /surat/:jenisSurat/:nik
+  @Get('surat/:jenisSurat/:nik')
   async generateSuratByNik(
     @Param('jenisSurat') jenisSurat: string,
     @Param('nik') nik: string,
