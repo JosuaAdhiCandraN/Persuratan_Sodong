@@ -139,7 +139,7 @@ export function CitizenFormModal({
         jenis_pekerjaan: citizen.jenis_pekerjaan || "",
         kesejahteraan: citizen.kesejahteraan || "",
         e_ktp: citizen.e_ktp || false,
-        tgl_update_kk: citizen.tgl_update_kk || "",
+        tanggal_update_kk: citizen.tgl_update_kk || "",
         alamat_lengkap: citizen.alamat_lengkap || "",
       });
     } else {
@@ -166,7 +166,7 @@ export function CitizenFormModal({
         jenis_pekerjaan: "",
         kesejahteraan: "",
         e_ktp: false,
-        tgl_update_kk: "",
+        tanggal_update_kk: "",
         alamat_lengkap: "",
       });
     }
@@ -259,11 +259,14 @@ export function CitizenFormModal({
 
     const submitData = {
       ...formData,
-      umur: formData.umur ? Number.parseInt(formData.umur) : null,
-      rt: formData.rt ? Number.parseInt(formData.rt) : null,
-      rw: formData.rw ? Number.parseInt(formData.rw) : null,
+      umur: formData.umur ? (formData.umur) : null,
+      rt: formData.rt ? (formData.rt) : null,
+      rw: formData.rw ? (formData.rw) : null,
     };
-
+    // turn all SubmitData values to string
+    
+    console.log("Submitting data:", JSON.stringify(submitData));
+    // Dowload json while submitting
     onSubmit(submitData);
   };
 

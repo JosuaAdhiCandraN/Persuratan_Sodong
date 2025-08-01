@@ -12,10 +12,10 @@ export class Warga {
   @Prop() rt!: string;
   @Prop() rw!: string;
   @Prop() tempat_lahir!: string;
-  @Prop() tgl_lahir!: Date;
+  @Prop() tgl_lahir!: string;
   @Prop() jenis_kelamin!: string; // LK/PR
   @Prop() status_kawin!: string;
-  @Prop() tgl_perkawinan_perceraian!: Date;
+  @Prop() tgl_perkawinan_perceraian!: string;
   @Prop() pendidikan!: string;
   @Prop() agama!: string;
   @Prop() no_akte!: string;
@@ -26,8 +26,8 @@ export class Warga {
   @Prop() ibu!: string;
   @Prop() jenis_pekerjaan!: string;
   @Prop() kesejahteraan!: string;
-  @Prop() e_ktp!: string;
-  @Prop() tanggal_update_kk!: Date;
+  @Prop() e_ktp!: boolean; // e-KTP status
+  @Prop() tgl_update_kk!: string;
   @Prop() alamat_lengkap!: string;
 }
 
