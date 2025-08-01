@@ -1,6 +1,8 @@
-import { Controller, Get, Param, Query, NotFoundException } from '@nestjs/common';
+import { Controller, Get, Param, Query, NotFoundException,Post,Put,Body,HttpException,HttpStatus} from '@nestjs/common';
 import { WargaService } from './warga.service';
 import { SuratTemplateService } from '../surat/surat-template.service';
+import { Warga } from '../warga/warga.schema';
+import { CreateWargaDto } from './dto/create-warga.dto';
 
 @Controller() // ❗ Tanpa prefix => route bebas /warga, /surat/...
 export class WargaController {
@@ -9,10 +11,24 @@ export class WargaController {
     private readonly suratTemplateService: SuratTemplateService,
   ) {}
 
-  // ✅ GET /warga?limit=10
+  // ✅ GET
   @Get('warga')
   async getAllWarga() {
     return this.wargaService.findAll();
+  }
+
+  @Post('create/warga')
+  async createWarga(@Body() createWargaDto: CreateWargaDto) {
+  return await this.wargaService.create(createWargaDto);
+}
+
+  @Put('update/warga/:nik')
+  async updateWarga(@Param('nik') nik: string, @Body() data: Partial<Warga>) {
+    const updated = await this.wargaService.updateByNik(nik, data);
+    if (!updated) {
+      throw new NotFoundException('Warga tidak ditemukan untuk diperbarui');
+    }
+    return updated;
   }
 
   // ✅ GET /surat/:jenisSurat/:nik

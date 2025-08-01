@@ -17,7 +17,27 @@ const mockAPI = {
       throw new Error('Gagal mengambil data warga');
     }
     return await res.json();
-  }
+  }, 
+  createCitizen: async (formData) => {
+    const res = await fetch('http://localhost:5000/create/warga', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(formData),
+    });
+    if (!res.ok) throw new Error('Gagal membuat warga');
+    return await res.json();
+  },
+
+  // ✅ PUT http://localhost:5000/warga/:nik
+  updateCitizen: async (nik, formData) => {
+    const res = await fetch(`http://localhost:5000/update/warga/${nik}`, {
+      method: 'PUT', // karena NestJS-mu pakai @Put
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(formData),
+    });
+    if (!res.ok) throw new Error('Gagal mengupdate warga');
+    return await res.json();
+  },
 };
 
 export default function CitizensPage() {
@@ -78,27 +98,26 @@ export default function CitizensPage() {
       setFormLoading(true);
 
       if (selectedCitizen) {
-        // Update existing citizen
-        const updatedCitizen = await mockAPI.updateCitizen(
-          selectedCitizen.id,
-          formData
-        );
-        setCitizens((prev) =>
-          prev.map((c) => (c.id === selectedCitizen.id ? updatedCitizen : c))
-        );
-        toast({
-          title: "Berhasil",
-          description: "Data warga berhasil diperbarui",
-        });
+      // ✅ Ganti id dengan nik agar cocok dengan backend
+      const updatedCitizen = await mockAPI.updateCitizen(
+        selectedCitizen.nik,
+        formData
+      );
+      setCitizens((prev) =>
+        prev.map((c) => (c.nik === selectedCitizen.nik ? updatedCitizen : c))
+      );
+      toast({
+        title: "Berhasil",
+        description: "Data warga berhasil diperbarui",
+      });
       } else {
-        // Create new citizen
-        const newCitizen = await mockAPI.createCitizen(formData);
-        setCitizens((prev) => [...prev, newCitizen]);
-        toast({
-          title: "Berhasil",
-          description: "Data warga baru berhasil ditambahkan",
-        });
-      }
+      const newCitizen = await mockAPI.createCitizen(formData);
+      setCitizens((prev) => [...prev, newCitizen]);
+      toast({
+        title: "Berhasil",
+        description: "Data warga baru berhasil ditambahkan",
+      });
+    }
 
       setFormModalOpen(false);
       setSelectedCitizen(null);

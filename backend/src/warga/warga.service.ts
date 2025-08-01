@@ -17,14 +17,14 @@ export class WargaService {
     return this.wargaModel.find().exec();
   }
 
-//   async create(data: Partial<Warga>): Promise<Warga> {
-//     const newWarga = new this.wargaModel(data);
-//     return newWarga.save();
-//   }
+  async create(data: Partial<Warga>): Promise<Warga> {
+  const newWarga = new this.wargaModel(data);
+  return newWarga.save();
+  }
 
-//   async updateByNik(nik: string, data: Partial<Warga>): Promise<Warga | null> {
-//     return this.wargaModel.findOneAndUpdate({ nik }, data, { new: true }).exec();
-//   }
+  async updateByNik(nik: string, data: Partial<Warga>): Promise<Warga | null> {
+  return this.wargaModel.findOneAndUpdate({ nik }, data, { new: true }).exec();
+  }
 
 //   async deleteByNik(nik: string): Promise<Warga | null> {
 //     return this.wargaModel.findOneAndDelete({ nik }).exec();
