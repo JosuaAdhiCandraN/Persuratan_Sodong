@@ -120,10 +120,10 @@ export function SignatoryFormModal({
     }
 
     if (!formData.nip.trim()) {
-      newErrors.nip = "NIP wajib diisi";
-    } else if (!/^\d{18}$/.test(formData.nip.replace(/\s/g, ""))) {
-      newErrors.nip = "NIP harus terdiri dari 18 digit angka";
-    }
+  newErrors.nip = "NIP wajib diisi";
+} else if (!/^\d{18}$/.test(formData.nip.replace(/\s/g, ""))) {
+  newErrors.nip = "NIP harus terdiri dari 18 digit angka";
+}
 
     if (!formData.position.trim()) {
       newErrors.position = "Jabatan wajib diisi";
@@ -191,26 +191,14 @@ export function SignatoryFormModal({
     // Remove all non-digits
     const digits = value.replace(/\D/g, "");
 
-    // Format as XX XXX XXX X XXX XXX
-    if (digits.length <= 2) return digits;
-    if (digits.length <= 5) return `${digits.slice(0, 2)} ${digits.slice(2)}`;
-    if (digits.length <= 8)
-      return `${digits.slice(0, 2)} ${digits.slice(2, 5)} ${digits.slice(5)}`;
-    if (digits.length <= 9)
-      return `${digits.slice(0, 2)} ${digits.slice(2, 5)} ${digits.slice(
-        5,
-        8
-      )} ${digits.slice(8)}`;
-    if (digits.length <= 12)
-      return `${digits.slice(0, 2)} ${digits.slice(2, 5)} ${digits.slice(
-        5,
-        8
-      )} ${digits.slice(8, 9)} ${digits.slice(9)}`;
-    return `${digits.slice(0, 2)} ${digits.slice(2, 5)} ${digits.slice(
-      5,
-      8
-    )} ${digits.slice(8, 9)} ${digits.slice(9, 12)} ${digits.slice(12, 15)}`;
-  };
+    // Format as XXXXXXXX XXXXXX xxx x
+    if (digits.length <= 8) return digits;
+  if (digits.length <= 14)
+    return `${digits.slice(0, 8)} ${digits.slice(8)}`;
+  if (digits.length <= 15)
+    return `${digits.slice(0, 8)} ${digits.slice(8, 14)} ${digits.slice(14)}`;
+  return `${digits.slice(0, 8)} ${digits.slice(8, 14)} ${digits.slice(14, 15)} ${digits.slice(15, 18)}`;
+};
 
   const handleNIPChange = (e) => {
     const formatted = formatNIP(e.target.value);

@@ -36,6 +36,7 @@
     "docxtemplater": "^3.65.2",
     "dotenv": "^17.2.1",
     "mongoose": "^8.16.4",
+    "nodemon": "^3.1.10",
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",
     "pizzip": "^3.2.0",

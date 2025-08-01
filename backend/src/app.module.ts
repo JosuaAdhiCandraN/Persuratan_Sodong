@@ -9,6 +9,7 @@ import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { SuratModule } from './surat/surat.module';
 import { RiwayatModule } from './riwayat/riwayat.module';
+import { PejabatModule } from './pejabat/pejabat.module';
 
 @Module({
   imports: [
@@ -19,7 +20,8 @@ import { RiwayatModule } from './riwayat/riwayat.module';
     AuthModule, 
     UserModule,
     SuratModule,
-    RiwayatModule
+    RiwayatModule,
+    PejabatModule
   ],
   controllers: [AppController],
   providers: [AppService],
