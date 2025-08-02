@@ -10,70 +10,43 @@ import { SignatoryDetailModal } from "@/components/signatories/signatory-detail-
 import { toast } from "@/hooks/use-toast";
 
 // Mock API functions
-const mockAPI = {
+  const mockAPI = {
   getSignatories: async () => {
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    return [
-      {
-        id: 1,
-        name: "Dr. Ahmad Suryanto, S.Sos., M.Si.",
-        nip: "19750815 199803 1 002",
-        position: "Kepala Desa",
-        rank: "Pembina",
-        grade: "IV/a",
-        notes: "Kepala Desa periode 2019-2025",
-        createdAt: "2024-01-15T08:00:00Z",
-        updatedAt: "2024-01-15T08:00:00Z",
-      },
-      {
-        id: 2,
-        name: "Siti Nurhaliza, S.AP.",
-        nip: "19820312 200604 2 001",
-        position: "Sekretaris Desa",
-        rank: "Penata",
-        grade: "III/c",
-        notes: "Sekretaris Desa sejak 2006",
-        createdAt: "2024-01-15T08:00:00Z",
-        updatedAt: "2024-02-10T10:30:00Z",
-      },
-      {
-        id: 3,
-        name: "Budi Santoso",
-        nip: "19850607 201001 1 003",
-        position: "Kepala Urusan Pemerintahan",
-        rank: "",
-        grade: "",
-        notes: "Tenaga honorer",
-        createdAt: "2024-01-20T09:15:00Z",
-        updatedAt: "2024-01-20T09:15:00Z",
-      },
-    ];
+    const res = await fetch('http://localhost:5000/desa/call/pejabat');
+    if (!res.ok) throw new Error('Gagal memuat data pejabat');
+    return await res.json();
   },
 
   createSignatory: async (data) => {
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-    return {
-      id: Date.now(),
-      ...data,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
+    const res = await fetch('http://localhost:5000/desa/create/pejabat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    });
+    if (!res.ok) throw new Error('Gagal menambahkan pejabat');
+    return await res.json();
   },
 
-  updateSignatory: async (id, data) => {
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-    return {
-      id,
-      ...data,
-      updatedAt: new Date().toISOString(),
-    };
-  },
+ updateSignatory: async (id, data) => {
+  const res = await fetch(`http://localhost:5000/desa/update/pejabat/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) throw new Error('Gagal memperbarui pejabat');
+  return await res.json();
+},
 
-  deleteSignatory: async (id) => {
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    return { success: true };
-  },
+deleteSignatory: async (id) => {
+  const res = await fetch(`http://localhost:5000/desa/delete/pejabat/${id}`, {
+    method: 'DELETE',
+  });
+  if (!res.ok) throw new Error('Gagal menghapus pejabat');
+  return await res.json();
+},
+
 };
+
 
 export default function SignatoriesPage() {
   const [signatories, setSignatories] = useState([]);
@@ -133,12 +106,12 @@ export default function SignatoriesPage() {
       if (selectedSignatory) {
         // Update existing signatory
         const updatedSignatory = await mockAPI.updateSignatory(
-          selectedSignatory.id,
+          selectedSignatory._id,
           formData
         );
         setSignatories((prev) =>
           prev.map((s) =>
-            s.id === selectedSignatory.id ? updatedSignatory : s
+            s._id === selectedSignatory._id ? updatedSignatory : s
           )
         );
         toast({
@@ -168,27 +141,28 @@ export default function SignatoriesPage() {
     }
   };
 
-  const handleDeleteConfirm = async (id) => {
-    try {
-      setDeleteLoading(true);
-      await mockAPI.deleteSignatory(id);
-      setSignatories((prev) => prev.filter((s) => s.id !== id));
-      setDeleteModalOpen(false);
-      setSelectedSignatory(null);
-      toast({
-        title: "Berhasil",
-        description: "Pejabat berhasil dihapus",
-      });
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Gagal menghapus pejabat",
-        variant: "destructive",
-      });
-    } finally {
-      setDeleteLoading(false);
-    }
-  };
+const handleDeleteConfirm = async (id) => {
+  try {
+    setDeleteLoading(true);
+    await mockAPI.deleteSignatory(selectedSignatory._id);
+    setSignatories((prev) => prev.filter((s) => s._id !== id)); // MongoDB _id
+    setDeleteModalOpen(false);
+    setSelectedSignatory(null);
+    toast({
+      title: "Berhasil",
+      description: "Pejabat berhasil dihapus",
+    });
+  } catch (error) {
+    toast({
+      title: "Error",
+      description: "Gagal menghapus pejabat",
+      variant: "destructive",
+    });
+  } finally {
+    setDeleteLoading(false);
+  }
+};
+
 
   const closeModals = () => {
     setFormModalOpen(false);

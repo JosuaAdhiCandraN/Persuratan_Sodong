@@ -8,6 +8,8 @@ import { SuratTemplateModule } from './surat/surat-template.module';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { SuratModule } from './surat/surat.module';
+import { RiwayatModule } from './riwayat/riwayat.module';
+import { PejabatModule } from './pejabat/pejabat.module';
 
 @Module({
   imports: [
@@ -17,7 +19,9 @@ import { SuratModule } from './surat/surat.module';
     SuratTemplateModule,
     AuthModule, 
     UserModule,
-    SuratModule
+    SuratModule,
+    RiwayatModule,
+    PejabatModule
   ],
   controllers: [AppController],
   providers: [AppService],
