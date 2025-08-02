@@ -22,6 +22,18 @@ import {
 } from "@/components/ui/select";
 import { useRouter } from "next/navigation";
 
+const ATAS_NAMA_POSITIONS = [
+  "Kepala Desa",
+  "Sekretaris Desa",
+  "Kepala Urusan Pemerintahan",
+  "Kepala Urusan Pembangunan",
+  "Kepala Urusan Kesejahteraan Rakyat",
+  "Kepala Urusan Keuangan",
+  "Kepala Urusan Umum",
+  "Kepala Dusun I",
+  "Kepala Dusun II",
+  "Kepala Dusun III",
+];
 export function DynamicForm({ letterType, onSubmit }) {
   const router = useRouter();
   const [formData, setFormData] = useState({});
@@ -330,13 +342,17 @@ export function DynamicForm({ letterType, onSubmit }) {
 
           {/* Checkbox for "Atas Nama" */}
           {selectedSignatory && (
-            <div className="gap-y-36 z-20">
+            <div className="space-y-4">
               <div className="flex items-center space-x-2">
                 <Checkbox
                   id="isAtasNama"
                   checked={!!atasNama}
                   onCheckedChange={(checked) => {
-                    if (!checked) {
+                    if (checked) {
+                      // When checked, set a default value to make the dropdown appear
+                      setAtasNama(ATAS_NAMA_POSITIONS[0] || ""); // Set to first option or empty if none
+                    } else {
+                      // When unchecked, clear the atasNama value
                       setAtasNama("");
                     }
                   }}
@@ -357,34 +373,11 @@ export function DynamicForm({ letterType, onSubmit }) {
                       <SelectValue placeholder="Pilih jabatan atas nama" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="Kepala Desa">Kepala Desa</SelectItem>
-                      <SelectItem value="Sekretaris Desa">
-                        Sekretaris Desa
-                      </SelectItem>
-                      <SelectItem value="Kepala Urusan Pemerintahan">
-                        Kepala Urusan Pemerintahan
-                      </SelectItem>
-                      <SelectItem value="Kepala Urusan Pembangunan">
-                        Kepala Urusan Pembangunan
-                      </SelectItem>
-                      <SelectItem value="Kepala Urusan Kesejahteraan Rakyat">
-                        Kepala Urusan Kesejahteraan Rakyat
-                      </SelectItem>
-                      <SelectItem value="Kepala Urusan Keuangan">
-                        Kepala Urusan Keuangan
-                      </SelectItem>
-                      <SelectItem value="Kepala Urusan Umum">
-                        Kepala Urusan Umum
-                      </SelectItem>
-                      <SelectItem value="Kepala Dusun I">
-                        Kepala Dusun I
-                      </SelectItem>
-                      <SelectItem value="Kepala Dusun II">
-                        Kepala Dusun II
-                      </SelectItem>
-                      <SelectItem value="Kepala Dusun III">
-                        Kepala Dusun III
-                      </SelectItem>
+                      {ATAS_NAMA_POSITIONS.map((position) => (
+                        <SelectItem key={position} value={position}>
+                          {position}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </div>
