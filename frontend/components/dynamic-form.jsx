@@ -24,73 +24,6 @@ export function DynamicForm({ letterType, onSubmit }) {
 
       // Mock data berdasarkan jenis surat
       const mockFields = fieldMap[letterType] || [];
-
-      //   const mockFields = [
-      //     {
-      //       name: "nik",
-      //       label: "NIK (Nomor Induk Kependudukan)",
-      //       type: "search",
-      //       required: true,
-      //       placeholder: "Value",
-      //     },
-      //     {
-      //       name: "nama",
-      //       label: "Nama",
-      //       type: "short_answer",
-      //       required: true,
-      //       placeholder: "Value",
-      //     },
-      //     {
-      //       name: "tempat_tanggal_lahir",
-      //       label: "Tempat, Tanggal Lahir",
-      //       type: "short_answer",
-      //       required: true,
-      //       placeholder: "Value",
-      //     },
-      //     {
-      //       name: "agama",
-      //       label: "Agama",
-      //       type: "short_answer",
-      //       required: true,
-      //       placeholder: "Value",
-      //     },
-      //     {
-      //       name: "status_pernikahan",
-      //       label: "Status Pernikahan",
-      //       type: "short_answer",
-      //       required: true,
-      //       placeholder: "Value",
-      //     },
-      //     {
-      //       name: "kewarganegaraan",
-      //       label: "Kewarganegaraan",
-      //       type: "short_answer",
-      //       required: true,
-      //       placeholder: "Value",
-      //     },
-      //     {
-      //       name: "pekerjaan",
-      //       label: "Pekerjaan",
-      //       type: "select",
-      //       required: true,
-      //       placeholder: "Value",
-      //       options: [
-      //         { value: "pegawai_negeri", label: "Pegawai Negeri" },
-      //         { value: "pegawai_swasta", label: "Pegawai Swasta" },
-      //         { value: "wiraswasta", label: "Wiraswasta" },
-      //         { value: "pelajar", label: "Pelajar/Mahasiswa" },
-      //         { value: "ibu_rumah_tangga", label: "Ibu Rumah Tangga" },
-      //       ],
-      //     },
-      //     {
-      //       name: "alamat",
-      //       label: "Alamat",
-      //       type: "long_answer",
-      //       required: true,
-      //       placeholder: "Value",
-      //     },
-      //   ];
-
       setFormFields(mockFields);
       setLoading(false);
     };
@@ -108,31 +41,69 @@ export function DynamicForm({ letterType, onSubmit }) {
     }));
   };
 
-  const handleSearch = async (searchValue) => {
-    // Mock search functionality untuk NIK
-    console.log("Searching for:", searchValue);
-    // Simulasi pencarian data
-    if (searchValue === "1234567890123456") {
-      setFormData((prev) => ({
-        ...prev,
-        nama: "John Doe",
-        tempat_tanggal_lahir: "Jakarta, 01 Januari 1990",
-        agama: "Islam",
-        status_pernikahan: "Belum Kawin",
-        kewarganegaraan: "Indonesia",
-        alamat: "Jl. Contoh No. 123, Jakarta",
-      }));
+const handleSearch = async (nik) => {
+    try {  
+    const res = await fetch(`http://localhost:5000/surat/${letterType.trim()}/${nik}`);
+    if (!res.ok) {
+      alert("Data tidak ditemukan");
+      console.log("Fetching from:", `http://localhost:5000/surat/${letterType}/${nik}`);
+      return;
+    }
+    const result = await res.json();
+    setFormData((prev) => ({
+      ...prev,
+      ...result.data,
+    }));
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      alert("Terjadi kesalahan saat mengambil data");
     }
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (!acceptTerms) {
-      alert("Harap setujui syarat dan ketentuan");
+ const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  if (!acceptTerms) {
+    alert("Harap setujui syarat dan ketentuan");
+    return;
+  }
+
+  const payload = {
+    jenisSurat: letterType,
+    data: formData,
+  };
+
+  try {
+    const response = await fetch("http://localhost:5000/surat/generate", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+
+    if (!response.ok) {
+      const errorResponse = await response.json();
+      console.error("❌ Server response error:", errorResponse);
+      console.log("📦 Body dikirim:", payload);
+      alert(errorResponse.message || "Gagal membuat surat");
       return;
     }
-    onSubmit(formData);
-  };
+
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${letterType}-${Date.now()}.docx`;
+    a.click();
+    window.URL.revokeObjectURL(url);
+  } catch (error) {
+    console.error("🔥 Network or parsing error:", error);
+    console.log("📦 Body dikirim:", payload);
+    alert("Gagal memproses surat");
+  }
+};
+
+
+
 
   if (loading) {
     return (
