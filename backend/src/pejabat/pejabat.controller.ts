@@ -18,6 +18,15 @@ export class PejabatController {
     return this.pejabatService.findAll();
   }
 
+  @Get('call/pejabat/:nip')
+  async getPejabatByNip(@Param('nip') nip: string) {
+    const pejabat = await this.pejabatService.findByNip(nip);
+    if (!pejabat) {
+      throw new NotFoundException('Pejabat tidak ditemukan');
+    }
+    return pejabat;
+  }
+
   @Post('create/pejabat')
   async createWarga(@Body() createPejabatDto: CreatePejabatDto) {
   return await this.pejabatService.create(createPejabatDto);
