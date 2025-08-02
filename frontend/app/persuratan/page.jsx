@@ -6,7 +6,7 @@ import { Header } from "@/components/header";
 import { LetterTypeSelector } from "@/components/letter-type-selector";
 import { DynamicForm } from "@/components/dynamic-form";
 
-export default function PersuratanPage() {
+export default function DashboardPage() {
   const [selectedLetterType, setSelectedLetterType] = useState(null);
   const [showForm, setShowForm] = useState(false);
 
@@ -17,17 +17,36 @@ export default function PersuratanPage() {
     }
   };
 
-  const handleFormSubmit = (formData) => {
-    console.log("Form submitted:", formData);
-    console.log("Letter type:", selectedLetterType);
+  const handleFormSubmit = (submissionData) => {
+    console.log("Form submitted with data:", submissionData);
+    console.log("Jenis Surat:", submissionData.jenisSurat);
+    console.log("Form Inputs:", submissionData.formInputs);
+    console.log("Penandatangan:", submissionData.penandatangan);
+    console.log("Atas Nama:", submissionData.atasNama);
+    console.log("Metadata:", submissionData.metadata);
 
-    // Di sini Anda bisa mengirim data ke API
-    alert("Surat berhasil dibuat!");
+    // Here you would send the data to your backend API
+    fetch("/api/letters/generate", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(submissionData),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("Letter generated:", data);
+        // Handle success (e.g., show download link, redirect, etc.)
+      })
+      .catch((error) => {
+        console.error("Error generating letter:", error);
+        // Handle error
+      });
 
-    // Reset form tapi tetap pertahankan dropdown
+    alert("Surat berhasil dibuat! Data telah dikirim ke backend.");
+
+    // Reset form
     setShowForm(false);
-    // Optionally reset selected type jika ingin
-    // setSelectedLetterType(null)
   };
 
   return (
