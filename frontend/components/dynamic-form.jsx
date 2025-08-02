@@ -298,20 +298,33 @@ export function DynamicForm({ letterType, onSubmit }) {
     }));
   };
 
-  const handleSearch = async (searchValue) => {
-    // Mock search functionality untuk NIK
-    console.log("Searching for:", searchValue);
-    // Simulasi pencarian data
-    if (searchValue === "1234567890123456") {
+  const handleSearch = async (nik) => {
+    try {
+      const res = await fetch(
+        `http://localhost:5000/surat/${letterType.trim()}/${nik}`
+      );
+      if (!res.ok) {
+        alert("Data tidak ditemukan");
+        console.log(
+          "Fetching from:",
+          `http://localhost:5000/surat/${letterType}/${nik}`
+        );
+        return;
+      }
+      const result = await res.json();
+      if (data.tgl_lahir) {
+        const dateObj = new Date(data.tgl_lahir);
+        data.tgl_lahir = dateObj.toISOString().split("T")[0];
+      }
+
       setFormData((prev) => ({
         ...prev,
-        nama: "John Doe",
-        tempat_tanggal_lahir: "Jakarta, 01 Januari 1990",
-        agama: "Islam",
-        status_pernikahan: "Belum Kawin",
-        kewarganegaraan: "Indonesia",
-        alamat: "Jl. Contoh No. 123, Jakarta",
+        ...data,
       }));
+      console.log("Response:", result);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      alert("Terjadi kesalahan saat mengambil data");
     }
   };
 
