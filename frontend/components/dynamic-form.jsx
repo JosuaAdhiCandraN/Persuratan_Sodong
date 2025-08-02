@@ -117,6 +117,7 @@ export function DynamicForm({ letterType, onSubmit }) {
         return;
       }
       const result = await res.json();
+      let data = result.data;
       if (data.tgl_lahir) {
         const dateObj = new Date(data.tgl_lahir);
         data.tgl_lahir = dateObj.toISOString().split("T")[0];
@@ -146,10 +147,7 @@ export function DynamicForm({ letterType, onSubmit }) {
       return;
     }
 
-    if (selectedSignatory.position !== "Kepala Desa" && !atasNama) {
-      alert("Harap pilih jabatan atas nama");
-      return;
-    }
+    // No additional validation needed for atasNama since it's now optional
 
     setShowConfirmation(true);
   };
@@ -157,9 +155,9 @@ export function DynamicForm({ letterType, onSubmit }) {
   const handleConfirmGeneration = async () => {
     const submissionData = {
       jenisSurat: letterType,
-      formInputs: formData,
+      data: formData,
       penandatangan: selectedSignatory,
-      atasNama: selectedSignatory.position !== "Kepala Desa" ? atasNama : null,
+      atasNama: atasNama || null,
       metadata: {
         timestamp: new Date().toISOString(),
         createdBy: "Admin Desa",
@@ -330,69 +328,100 @@ export function DynamicForm({ letterType, onSubmit }) {
             </Select>
           </div>
 
-          {/* Show "Atas Nama" field if selected signatory is not Kepala Desa */}
-          {selectedSignatory &&
-            selectedSignatory.position !== "Kepala Desa" && (
-              <div className="space-y-2">
-                <Label htmlFor="atasNama" className="text-sm font-medium">
-                  Ditandatangani Atas Nama{" "}
-                  <span className="text-red-500">*</span>
-                </Label>
-                <Select value={atasNama} onValueChange={setAtasNama}>
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Pilih jabatan atas nama" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Kepala Desa">Kepala Desa</SelectItem>
-                    <SelectItem value="Sekretaris Desa">
-                      Sekretaris Desa
-                    </SelectItem>
-                    <SelectItem value="Kepala Urusan Pemerintahan">
-                      Kepala Urusan Pemerintahan
-                    </SelectItem>
-                    <SelectItem value="Kepala Urusan Pembangunan">
-                      Kepala Urusan Pembangunan
-                    </SelectItem>
-                    <SelectItem value="Kepala Urusan Kesejahteraan Rakyat">
-                      Kepala Urusan Kesejahteraan Rakyat
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            )}
-
+          {/* Checkbox for "Atas Nama" */}
           {selectedSignatory && (
-            <div className="bg-gray-50 p-4 rounded-lg">
-              <h4 className="font-medium text-gray-900 mb-2">
-                Detail Pejabat Terpilih:
-              </h4>
-              <div className="text-sm text-gray-600 space-y-1">
-                <p>
-                  <span className="font-medium">Nama:</span>{" "}
-                  {selectedSignatory.name}
-                </p>
-                <p>
-                  <span className="font-medium">Jabatan:</span>{" "}
-                  {selectedSignatory.position}
-                </p>
-                {selectedSignatory.rank && (
-                  <p>
-                    <span className="font-medium">Pangkat:</span>{" "}
-                    {selectedSignatory.rank}
-                  </p>
-                )}
-                {selectedSignatory.grade && (
-                  <p>
-                    <span className="font-medium">Golongan:</span>{" "}
-                    {selectedSignatory.grade}
-                  </p>
-                )}
-                {atasNama && (
-                  <p>
-                    <span className="font-medium">Atas Nama:</span> {atasNama}
-                  </p>
-                )}
+            <div className="gap-y-36 z-20">
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="isAtasNama"
+                  checked={!!atasNama}
+                  onCheckedChange={(checked) => {
+                    if (!checked) {
+                      setAtasNama("");
+                    }
+                  }}
+                />
+                <Label htmlFor="isAtasNama" className="text-sm font-medium">
+                  Penandatanganan atas nama pejabat lain
+                </Label>
               </div>
+
+              {/* Show "Atas Nama" dropdown if checkbox is checked */}
+              {atasNama !== "" && (
+                <div className="space-y-2 ml-6">
+                  <Label htmlFor="atasNama" className="text-sm font-medium">
+                    Atas Nama <span className="text-red-500">*</span>
+                  </Label>
+                  <Select value={atasNama} onValueChange={setAtasNama}>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Pilih jabatan atas nama" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Kepala Desa">Kepala Desa</SelectItem>
+                      <SelectItem value="Sekretaris Desa">
+                        Sekretaris Desa
+                      </SelectItem>
+                      <SelectItem value="Kepala Urusan Pemerintahan">
+                        Kepala Urusan Pemerintahan
+                      </SelectItem>
+                      <SelectItem value="Kepala Urusan Pembangunan">
+                        Kepala Urusan Pembangunan
+                      </SelectItem>
+                      <SelectItem value="Kepala Urusan Kesejahteraan Rakyat">
+                        Kepala Urusan Kesejahteraan Rakyat
+                      </SelectItem>
+                      <SelectItem value="Kepala Urusan Keuangan">
+                        Kepala Urusan Keuangan
+                      </SelectItem>
+                      <SelectItem value="Kepala Urusan Umum">
+                        Kepala Urusan Umum
+                      </SelectItem>
+                      <SelectItem value="Kepala Dusun I">
+                        Kepala Dusun I
+                      </SelectItem>
+                      <SelectItem value="Kepala Dusun II">
+                        Kepala Dusun II
+                      </SelectItem>
+                      <SelectItem value="Kepala Dusun III">
+                        Kepala Dusun III
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+
+              {/* <div className="bg-gray-50 p-4 rounded-lg">
+                <h4 className="font-medium text-gray-900 mb-2">
+                  Detail Pejabat Terpilih:
+                </h4>
+                <div className="text-sm text-gray-600 space-y-1">
+                  <p>
+                    <span className="font-medium">Nama:</span>{" "}
+                    {selectedSignatory.name}
+                  </p>
+                  <p>
+                    <span className="font-medium">Jabatan:</span>{" "}
+                    {selectedSignatory.position}
+                  </p>
+                  {selectedSignatory.rank && (
+                    <p>
+                      <span className="font-medium">Pangkat:</span>{" "}
+                      {selectedSignatory.rank}
+                    </p>
+                  )}
+                  {selectedSignatory.grade && (
+                    <p>
+                      <span className="font-medium">Golongan:</span>{" "}
+                      {selectedSignatory.grade}
+                    </p>
+                  )}
+                  {atasNama && (
+                    <p>
+                      <span className="font-medium">Atas Nama:</span> {atasNama}
+                    </p>
+                  )}
+                </div>
+              </div> */}
             </div>
           )}
         </div>
@@ -415,11 +444,7 @@ export function DynamicForm({ letterType, onSubmit }) {
           <Button
             type="submit"
             className="w-full bg-blue-600 hover:bg-blue-700"
-            disabled={
-              !acceptTerms ||
-              !selectedSignatory ||
-              (selectedSignatory.position !== "Kepala Desa" && !atasNama)
-            }
+            disabled={!acceptTerms || !selectedSignatory}
           >
             Buat Surat
           </Button>
