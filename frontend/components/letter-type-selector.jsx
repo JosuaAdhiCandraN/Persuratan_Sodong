@@ -31,7 +31,7 @@ export function LetterTypeSelector({ onSelectLetterType, selectedType }) {
           label: "Surat Keterangan Domisili",
         },
         { value: "surat_keterangan_usaha", label: "Surat Keterangan Usaha" },
-        { value: "surat_pengantar", label: "Surat Pengantar" },
+        { value: "surat_pengantar_desa", label: "Surat Pengantar" },
       ];
 
       setLetterTypes(mockLetterTypes);

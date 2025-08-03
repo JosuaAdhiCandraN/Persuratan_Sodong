@@ -26,7 +26,7 @@ export default function DashboardPage() {
     console.log("Metadata:", submissionData.metadata);
 
     // Here you would send the data to your backend API
-    fetch("/api/letters/generate", {
+    /**fetch("/api/letters/generate", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -44,6 +44,7 @@ export default function DashboardPage() {
       });
 
     alert("Surat berhasil dibuat! Data telah dikirim ke backend.");
+  **/
 
     // Reset form
     setShowForm(false);

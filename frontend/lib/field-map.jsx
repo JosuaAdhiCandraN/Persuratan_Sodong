@@ -102,7 +102,7 @@ const fieldMap = {
     },
   ],
 
-  surat_pengantar: [
+  surat_pengantar_desa: [
     {
       name: "nik",
       label: "NIK (Nomor Induk Kependudukan)",

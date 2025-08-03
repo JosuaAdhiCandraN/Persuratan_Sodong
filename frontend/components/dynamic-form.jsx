@@ -71,41 +71,21 @@ export function DynamicForm({ letterType, onSubmit }) {
 
   // Fetch signatories
   useEffect(() => {
-    const fetchSignatories = async () => {
-      // Mock API call to get signatories
-      await new Promise((resolve) => setTimeout(resolve, 500));
-
-      const mockSignatories = [
-        {
-          id: 1,
-          name: "Dr. Ahmad Suryanto, S.Sos., M.Si.",
-          position: "Kepala Desa",
-          rank: "Pembina",
-          grade: "IV/a",
-        },
-        {
-          id: 2,
-          name: "Siti Nurhaliza, S.AP.",
-          position: "Sekretaris Desa",
-          rank: "Penata",
-          grade: "III/c",
-        },
-        {
-          id: 3,
-          name: "Budi Santoso",
-          position: "Kepala Urusan Pemerintahan",
-          rank: "",
-          grade: "",
-        },
-      ];
-
-      setSignatories(mockSignatories);
-    };
-
-    if (letterType) {
-      fetchSignatories();
+  const fetchSignatories = async () => {
+    try {
+      const res = await fetch('http://localhost:5000/desa/call/pejabat');
+      if (!res.ok) throw new Error('Gagal memuat data pejabat');
+      const data = await res.json();
+      setSignatories(data);
+    } catch (error) {
+      console.error("Gagal mengambil data pejabat:", error);
     }
-  }, [letterType]);
+  };
+
+  if (letterType) { 
+    fetchSignatories();
+  }
+}, [letterType]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -114,6 +94,19 @@ export function DynamicForm({ letterType, onSubmit }) {
       [name]: value,
     }));
   };
+
+  const handlePejabatSelect = async (e) => {
+  const nip = e.target.value;
+  const res = await fetch(`http://localhost:5000/desa/call/pejabat/${nip}`);
+  const data = await res.json();
+  setFormData((prev) => ({
+    ...prev,
+    name: data.name,
+    position: data.position,
+    rank: data.rank,
+    grade: data.grade,
+  }));
+};
 
   const handleSearch = async (nik) => {
     try {
@@ -165,72 +158,71 @@ export function DynamicForm({ letterType, onSubmit }) {
   };
 
   const handleConfirmGeneration = async () => {
-    const submissionData = {
-      jenisSurat: letterType,
-      data: formData,
-      penandatangan: selectedSignatory,
-      atasNama: atasNama || null,
-      metadata: {
-        timestamp: new Date().toISOString(),
-        createdBy: "Admin Desa",
-      },
-    };
+     const submissionData = {
+    jenisSurat: letterType,
+    data: {
+      ...formData,
+      nip: selectedSignatory.nip,
+      name: selectedSignatory.name,
+      position: selectedSignatory.position,
+      rank: selectedSignatory.rank,
+      grade: selectedSignatory.grade,
+      atas_nama: atasNama || null,
+      created_by: "Admin Desa",
+      timestamp: new Date().toISOString(),
+    },
+  };
 
     setShowConfirmation(false);
     setIsGenerating(true);
 
     try {
-      // Simulate API call with random success/failure
-      await new Promise((resolve) => setTimeout(resolve, 3000));
+    const response = await fetch("http://localhost:5000/surat/generate", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(submissionData),
+    });
 
-      // Mock API response - randomly succeed or fail for demo
-      const shouldSucceed = Math.random() > 0.2; // 80% success rate
-
-      if (shouldSucceed) {
-        // Success response
-        const letterId = `LTR-${Date.now()}`;
-        const fileName = `${letterType.replace(
-          /\s+/g,
-          "_"
-        )}_${formData.nama?.replace(/\s+/g, "_")}.pdf`;
-
-        const mockResponse = {
-          success: true,
-          data: {
-            letterId: letterId,
-            fileName: fileName,
-            downloadUrl: `/api/letters/download/${letterId}`,
-            fileType: "PDF",
-            fileSize: "245 KB",
-            generatedAt: new Date().toISOString(),
-          },
-          message: "Surat berhasil dibuat",
-        };
-
-        setGenerationResult(mockResponse);
-
-        // Call the original onSubmit for any additional handling
-        if (onSubmit) {
-          onSubmit(submissionData);
-        }
-      } else {
-        // Error response
-        throw new Error(
-          "Gagal membuat surat. Server sedang mengalami gangguan."
-        );
-      }
-    } catch (error) {
-      console.error("Error generating letter:", error);
-      setGenerationResult({
-        success: false,
-        error: error.message || "Terjadi kesalahan saat membuat surat",
-        message: "Pembuatan surat gagal",
-      });
-    } finally {
-      setIsGenerating(false);
-      setShowResult(true);
+    if (!response.ok) {
+      throw new Error("Gagal membuat surat");
     }
-  };
+
+    const blob = await response.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+
+    const fileName = `${letterType}_${formData.nama}.docx`;
+    a.download = fileName;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    window.URL.revokeObjectURL(url);
+
+    // Simpan hasil ke state (opsional)
+    setGenerationResult({
+      success: true,
+      data: result,
+      message: result.message || "Surat berhasil dibuat",
+    });
+
+    if (onSubmit) {
+      onSubmit(submissionData);
+    }
+  } catch (error) {
+    console.error("Error generating letter:", error);
+    setGenerationResult({
+      success: false,
+      error: error.message || "Terjadi kesalahan saat membuat surat",
+      message: "Pembuatan surat gagal",
+    });
+  } finally {
+    setIsGenerating(false);
+    setShowResult(true);
+  }
+};
 
   const handleCloseResult = () => {
     setShowResult(false);
@@ -246,19 +238,19 @@ export function DynamicForm({ letterType, onSubmit }) {
   };
 
   const handleGoToDownload = () => {
-    if (generationResult?.data?.downloadUrl) {
-      // Navigate to dedicated download page
-      const downloadParams = new URLSearchParams({
-        url: generationResult.data.downloadUrl,
-        fileName: generationResult.data.fileName,
-        fileType: generationResult.data.fileType,
-        fileSize: generationResult.data.fileSize,
-        letterId: generationResult.data.letterId,
-      });
+  if (generationResult?.data?.downloadUrl) {
+    const downloadParams = new URLSearchParams({
+      url: generationResult.data.downloadUrl,
+      fileName: generationResult.data.fileName,
+      fileType: generationResult.data.fileType,
+      fileSize: generationResult.data.fileSize,
+      letterId: generationResult.data.letterId,
+    });
 
-      router.push(`/download?${downloadParams.toString()}`);
-    }
-  };
+    router.push(`/download?${downloadParams.toString()}`);
+  }
+};
+
 
   const handleRetry = () => {
     setShowResult(false);
@@ -309,24 +301,35 @@ export function DynamicForm({ letterType, onSubmit }) {
               <span className="text-red-500">*</span>
             </Label>
             <Select
-              value={selectedSignatory?.id?.toString() || ""}
+            value={selectedSignatory?.nip?.toString() || ""}
               onValueChange={(value) => {
                 const signatory = signatories.find(
-                  (s) => s.id.toString() === value
+                 (s) => s?.nip?.toString() === value
                 );
                 setSelectedSignatory(signatory);
-                // Reset atasNama when signatory changes
                 setAtasNama("");
-              }}
+
+                if (signatory) {
+                  setFormData((prev) => ({
+                    ...prev,
+                    nip: signatory.nip,
+                    name: signatory.name,
+                    position: signatory.position,
+                    rank: signatory.rank,
+                    grade: signatory.grade,
+                  }));
+                }
+              }
+            }
             >
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="Pilih pejabat penandatangan" />
               </SelectTrigger>
               <SelectContent>
-                {signatories.map((signatory) => (
+                {signatories?.map((signatory) => (
                   <SelectItem
-                    key={signatory.id}
-                    value={signatory.id.toString()}
+                    key={signatory.nip}
+                    value={signatory?.nip?.toString()}
                   >
                     <div className="flex flex-col">
                       <span className="font-medium">{signatory.name}</span>
