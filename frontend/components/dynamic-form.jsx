@@ -1,198 +1,3 @@
-// "use client";
-
-// import { useState, useEffect } from "react";
-// import { Button } from "@/components/ui/button";
-// import { Checkbox } from "@/components/ui/checkbox";
-// import { Alert, AlertDescription } from "@/components/ui/alert";
-// import { Info } from "lucide-react";
-// import { DynamicFieldRenderer } from "./dynamic-field-renderer";
-
-// export function DynamicForm({ letterType, onSubmit }) {
-//   const [formData, setFormData] = useState({});
-//   const [formFields, setFormFields] = useState([]);
-//   const [acceptTerms, setAcceptTerms] = useState(false);
-//   const [loading, setLoading] = useState(true);
-//   const fieldMap = require("../lib/field-map").default;
-
-//   // Mock API call untuk mendapatkan form fields berdasarkan jenis surat
-//   useEffect(() => {
-//     const fetchFormFields = async () => {
-//       setLoading(true);
-
-//       // Simulasi API call
-//       await new Promise((resolve) => setTimeout(resolve, 1000));
-
-//       // Mock data berdasarkan jenis surat
-//       const mockFields = fieldMap[letterType] || [];
-
-//       //   const mockFields = [
-//       //     {
-//       //       name: "nik",
-//       //       label: "NIK (Nomor Induk Kependudukan)",
-//       //       type: "search",
-//       //       required: true,
-//       //       placeholder: "Value",
-//       //     },
-//       //     {
-//       //       name: "nama",
-//       //       label: "Nama",
-//       //       type: "short_answer",
-//       //       required: true,
-//       //       placeholder: "Value",
-//       //     },
-//       //     {
-//       //       name: "tempat_tanggal_lahir",
-//       //       label: "Tempat, Tanggal Lahir",
-//       //       type: "short_answer",
-//       //       required: true,
-//       //       placeholder: "Value",
-//       //     },
-//       //     {
-//       //       name: "agama",
-//       //       label: "Agama",
-//       //       type: "short_answer",
-//       //       required: true,
-//       //       placeholder: "Value",
-//       //     },
-//       //     {
-//       //       name: "status_pernikahan",
-//       //       label: "Status Pernikahan",
-//       //       type: "short_answer",
-//       //       required: true,
-//       //       placeholder: "Value",
-//       //     },
-//       //     {
-//       //       name: "kewarganegaraan",
-//       //       label: "Kewarganegaraan",
-//       //       type: "short_answer",
-//       //       required: true,
-//       //       placeholder: "Value",
-//       //     },
-//       //     {
-//       //       name: "pekerjaan",
-//       //       label: "Pekerjaan",
-//       //       type: "select",
-//       //       required: true,
-//       //       placeholder: "Value",
-//       //       options: [
-//       //         { value: "pegawai_negeri", label: "Pegawai Negeri" },
-//       //         { value: "pegawai_swasta", label: "Pegawai Swasta" },
-//       //         { value: "wiraswasta", label: "Wiraswasta" },
-//       //         { value: "pelajar", label: "Pelajar/Mahasiswa" },
-//       //         { value: "ibu_rumah_tangga", label: "Ibu Rumah Tangga" },
-//       //       ],
-//       //     },
-//       //     {
-//       //       name: "alamat",
-//       //       label: "Alamat",
-//       //       type: "long_answer",
-//       //       required: true,
-//       //       placeholder: "Value",
-//       //     },
-//       //   ];
-
-//       setFormFields(mockFields);
-//       setLoading(false);
-//     };
-
-//     if (letterType) {
-//       fetchFormFields();
-//     }
-//   }, [letterType]);
-
-//   const handleInputChange = (e) => {
-//     const { name, value } = e.target;
-//     setFormData((prev) => ({
-//       ...prev,
-//       [name]: value,
-//     }));
-//   };
-
-//   const handleSearch = async (searchValue) => {
-//     // Mock search functionality untuk NIK
-//     console.log("Searching for:", searchValue);
-//     // Simulasi pencarian data
-//     if (searchValue === "1234567890123456") {
-//       setFormData((prev) => ({
-//         ...prev,
-//         nama: "John Doe",
-//         tempat_tanggal_lahir: "Jakarta, 01 Januari 1990",
-//         agama: "Islam",
-//         status_pernikahan: "Belum Kawin",
-//         kewarganegaraan: "Indonesia",
-//         alamat: "Jl. Contoh No. 123, Jakarta",
-//       }));
-//     }
-//   };
-
-//   const handleSubmit = (e) => {
-//     e.preventDefault();
-//     if (!acceptTerms) {
-//       alert("Harap setujui syarat dan ketentuan");
-//       return;
-//     }
-//     onSubmit(formData);
-//   };
-
-//   if (loading) {
-//     return (
-//       <div className="bg-white rounded-lg border border-gray-200 p-6 mt-6">
-//         <div className="flex items-center justify-center py-8">
-//           <div className="text-gray-500">Loading form...</div>
-//         </div>
-//       </div>
-//     );
-//   }
-
-//   return (
-//     <div className="bg-white rounded-lg border border-gray-200 p-6 mt-6">
-//       <Alert className="mb-6 bg-blue-50 border-blue-200">
-//         <Info className="h-4 w-4 text-blue-600" />
-//         <AlertDescription className="text-blue-800">
-//           Jika ada ketidaksesuaian data pada database dengan Data Existing,
-//           Dapat diubah melalui menu Database Penduduk.
-//         </AlertDescription>
-//       </Alert>
-
-//       <form onSubmit={handleSubmit} className="space-y-6">
-//         {formFields.map((field) => (
-//           <DynamicFieldRenderer
-//             key={field.name}
-//             field={field}
-//             value={formData[field.name]}
-//             onChange={handleInputChange}
-//             onSearch={field.type === "search" ? handleSearch : undefined}
-//           />
-//         ))}
-
-//         <div className="flex items-center space-x-2 pt-4">
-//           <Checkbox
-//             id="terms"
-//             checked={acceptTerms}
-//             onCheckedChange={setAcceptTerms}
-//           />
-//           <label htmlFor="terms" className="text-sm text-gray-600">
-//             I accept the terms{" "}
-//             <a href="#" className="text-blue-600 hover:underline">
-//               Read our T&Cs
-//             </a>
-//           </label>
-//         </div>
-
-//         <div className="pt-4">
-//           <Button
-//             type="submit"
-//             className="w-full bg-blue-600 hover:bg-blue-700"
-//             disabled={!acceptTerms}
-//           >
-//             Buat Surat
-//           </Button>
-//         </div>
-//       </form>
-//     </div>
-//   );
-// }
-
 "use client";
 
 import { useState, useEffect } from "react";
@@ -266,41 +71,21 @@ export function DynamicForm({ letterType, onSubmit }) {
 
   // Fetch signatories
   useEffect(() => {
-    const fetchSignatories = async () => {
-      // Mock API call to get signatories
-      await new Promise((resolve) => setTimeout(resolve, 500));
-
-      const mockSignatories = [
-        {
-          id: 1,
-          name: "Dr. Ahmad Suryanto, S.Sos., M.Si.",
-          position: "Kepala Desa",
-          rank: "Pembina",
-          grade: "IV/a",
-        },
-        {
-          id: 2,
-          name: "Siti Nurhaliza, S.AP.",
-          position: "Sekretaris Desa",
-          rank: "Penata",
-          grade: "III/c",
-        },
-        {
-          id: 3,
-          name: "Budi Santoso",
-          position: "Kepala Urusan Pemerintahan",
-          rank: "",
-          grade: "",
-        },
-      ];
-
-      setSignatories(mockSignatories);
-    };
-
-    if (letterType) {
-      fetchSignatories();
+  const fetchSignatories = async () => {
+    try {
+      const res = await fetch('http://localhost:5000/desa/call/pejabat');
+      if (!res.ok) throw new Error('Gagal memuat data pejabat');
+      const data = await res.json();
+      setSignatories(data);
+    } catch (error) {
+      console.error("Gagal mengambil data pejabat:", error);
     }
-  }, [letterType]);
+  };
+
+  if (letterType) { 
+    fetchSignatories();
+  }
+}, [letterType]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -309,6 +94,19 @@ export function DynamicForm({ letterType, onSubmit }) {
       [name]: value,
     }));
   };
+
+  const handlePejabatSelect = async (e) => {
+  const nip = e.target.value;
+  const res = await fetch(`http://localhost:5000/desa/call/pejabat/${nip}`);
+  const data = await res.json();
+  setFormData((prev) => ({
+    ...prev,
+    name: data.name,
+    position: data.position,
+    rank: data.rank,
+    grade: data.grade,
+  }));
+};
 
   const handleSearch = async (nik) => {
     try {
@@ -360,72 +158,71 @@ export function DynamicForm({ letterType, onSubmit }) {
   };
 
   const handleConfirmGeneration = async () => {
-    const submissionData = {
-      jenisSurat: letterType,
-      data: formData,
-      penandatangan: selectedSignatory,
-      atasNama: atasNama || null,
-      metadata: {
-        timestamp: new Date().toISOString(),
-        createdBy: "Admin Desa",
-      },
-    };
+     const submissionData = {
+    jenisSurat: letterType,
+    data: {
+      ...formData,
+      nip: selectedSignatory.nip,
+      name: selectedSignatory.name,
+      position: selectedSignatory.position,
+      rank: selectedSignatory.rank,
+      grade: selectedSignatory.grade,
+      atas_nama: atasNama || null,
+      created_by: "Admin Desa",
+      timestamp: new Date().toISOString(),
+    },
+  };
 
     setShowConfirmation(false);
     setIsGenerating(true);
 
     try {
-      // Simulate API call with random success/failure
-      await new Promise((resolve) => setTimeout(resolve, 3000));
+    const response = await fetch("http://localhost:5000/surat/generate", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(submissionData),
+    });
 
-      // Mock API response - randomly succeed or fail for demo
-      const shouldSucceed = Math.random() > 0.2; // 80% success rate
-
-      if (shouldSucceed) {
-        // Success response
-        const letterId = `LTR-${Date.now()}`;
-        const fileName = `${letterType.replace(
-          /\s+/g,
-          "_"
-        )}_${formData.nama?.replace(/\s+/g, "_")}.pdf`;
-
-        const mockResponse = {
-          success: true,
-          data: {
-            letterId: letterId,
-            fileName: fileName,
-            downloadUrl: `/api/letters/download/${letterId}`,
-            fileType: "PDF",
-            fileSize: "245 KB",
-            generatedAt: new Date().toISOString(),
-          },
-          message: "Surat berhasil dibuat",
-        };
-
-        setGenerationResult(mockResponse);
-
-        // Call the original onSubmit for any additional handling
-        if (onSubmit) {
-          onSubmit(submissionData);
-        }
-      } else {
-        // Error response
-        throw new Error(
-          "Gagal membuat surat. Server sedang mengalami gangguan."
-        );
-      }
-    } catch (error) {
-      console.error("Error generating letter:", error);
-      setGenerationResult({
-        success: false,
-        error: error.message || "Terjadi kesalahan saat membuat surat",
-        message: "Pembuatan surat gagal",
-      });
-    } finally {
-      setIsGenerating(false);
-      setShowResult(true);
+    if (!response.ok) {
+      throw new Error("Gagal membuat surat");
     }
-  };
+
+    const blob = await response.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+
+    const fileName = `${letterType}_${formData.nama}.docx`;
+    a.download = fileName;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    window.URL.revokeObjectURL(url);
+
+    // Simpan hasil ke state (opsional)
+    setGenerationResult({
+      success: true,
+      data: result,
+      message: result.message || "Surat berhasil dibuat",
+    });
+
+    if (onSubmit) {
+      onSubmit(submissionData);
+    }
+  } catch (error) {
+    console.error("Error generating letter:", error);
+    setGenerationResult({
+      success: false,
+      error: error.message || "Terjadi kesalahan saat membuat surat",
+      message: "Pembuatan surat gagal",
+    });
+  } finally {
+    setIsGenerating(false);
+    setShowResult(true);
+  }
+};
 
   const handleCloseResult = () => {
     setShowResult(false);
@@ -441,19 +238,19 @@ export function DynamicForm({ letterType, onSubmit }) {
   };
 
   const handleGoToDownload = () => {
-    if (generationResult?.data?.downloadUrl) {
-      // Navigate to dedicated download page
-      const downloadParams = new URLSearchParams({
-        url: generationResult.data.downloadUrl,
-        fileName: generationResult.data.fileName,
-        fileType: generationResult.data.fileType,
-        fileSize: generationResult.data.fileSize,
-        letterId: generationResult.data.letterId,
-      });
+  if (generationResult?.data?.downloadUrl) {
+    const downloadParams = new URLSearchParams({
+      url: generationResult.data.downloadUrl,
+      fileName: generationResult.data.fileName,
+      fileType: generationResult.data.fileType,
+      fileSize: generationResult.data.fileSize,
+      letterId: generationResult.data.letterId,
+    });
 
-      router.push(`/download?${downloadParams.toString()}`);
-    }
-  };
+    router.push(`/download?${downloadParams.toString()}`);
+  }
+};
+
 
   const handleRetry = () => {
     setShowResult(false);
@@ -504,24 +301,35 @@ export function DynamicForm({ letterType, onSubmit }) {
               <span className="text-red-500">*</span>
             </Label>
             <Select
-              value={selectedSignatory?.id?.toString() || ""}
+            value={selectedSignatory?.nip?.toString() || ""}
               onValueChange={(value) => {
                 const signatory = signatories.find(
-                  (s) => s.id.toString() === value
+                 (s) => s?.nip?.toString() === value
                 );
                 setSelectedSignatory(signatory);
-                // Reset atasNama when signatory changes
                 setAtasNama("");
-              }}
+
+                if (signatory) {
+                  setFormData((prev) => ({
+                    ...prev,
+                    nip: signatory.nip,
+                    name: signatory.name,
+                    position: signatory.position,
+                    rank: signatory.rank,
+                    grade: signatory.grade,
+                  }));
+                }
+              }
+            }
             >
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="Pilih pejabat penandatangan" />
               </SelectTrigger>
               <SelectContent>
-                {signatories.map((signatory) => (
+                {signatories?.map((signatory) => (
                   <SelectItem
-                    key={signatory.id}
-                    value={signatory.id.toString()}
+                    key={signatory.nip}
+                    value={signatory?.nip?.toString()}
                   >
                     <div className="flex flex-col">
                       <span className="font-medium">{signatory.name}</span>
