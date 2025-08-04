@@ -43,8 +43,6 @@ export default function DashboardPage() {
         // Handle error
       });
 
-    alert("Surat berhasil dibuat! Data telah dikirim ke backend.");
-
     // Reset form
     setShowForm(false);
   };
