@@ -71,21 +71,21 @@ export function DynamicForm({ letterType, onSubmit }) {
 
   // Fetch signatories
   useEffect(() => {
-  const fetchSignatories = async () => {
-    try {
-      const res = await fetch('http://localhost:5000/desa/call/pejabat');
-      if (!res.ok) throw new Error('Gagal memuat data pejabat');
-      const data = await res.json();
-      setSignatories(data);
-    } catch (error) {
-      console.error("Gagal mengambil data pejabat:", error);
-    }
-  };
+    const fetchSignatories = async () => {
+      try {
+        const res = await fetch("http://localhost:5000/desa/call/pejabat");
+        if (!res.ok) throw new Error("Gagal memuat data pejabat");
+        const data = await res.json();
+        setSignatories(data);
+      } catch (error) {
+        console.error("Gagal mengambil data pejabat:", error);
+      }
+    };
 
-  if (letterType) { 
-    fetchSignatories();
-  }
-}, [letterType]);
+    if (letterType) {
+      fetchSignatories();
+    }
+  }, [letterType]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -96,17 +96,17 @@ export function DynamicForm({ letterType, onSubmit }) {
   };
 
   const handlePejabatSelect = async (e) => {
-  const nip = e.target.value;
-  const res = await fetch(`http://localhost:5000/desa/call/pejabat/${nip}`);
-  const data = await res.json();
-  setFormData((prev) => ({
-    ...prev,
-    name: data.name,
-    position: data.position,
-    rank: data.rank,
-    grade: data.grade,
-  }));
-};
+    const nip = e.target.value;
+    const res = await fetch(`http://localhost:5000/desa/call/pejabat/${nip}`);
+    const data = await res.json();
+    setFormData((prev) => ({
+      ...prev,
+      name: data.name,
+      position: data.position,
+      rank: data.rank,
+      grade: data.grade,
+    }));
+  };
 
   const handleSearch = async (nik) => {
     try {
@@ -158,71 +158,71 @@ export function DynamicForm({ letterType, onSubmit }) {
   };
 
   const handleConfirmGeneration = async () => {
-     const submissionData = {
-    jenisSurat: letterType,
-    data: {
-      ...formData,
-      nip: selectedSignatory.nip,
-      name: selectedSignatory.name,
-      position: selectedSignatory.position,
-      rank: selectedSignatory.rank,
-      grade: selectedSignatory.grade,
-      atas_nama: atasNama || null,
-      created_by: "Admin Desa",
-      timestamp: new Date().toISOString(),
-    },
-  };
+    const submissionData = {
+      jenisSurat: letterType,
+      data: {
+        ...formData,
+        nip: selectedSignatory.nip,
+        name: selectedSignatory.name,
+        position: selectedSignatory.position,
+        rank: selectedSignatory.rank,
+        grade: selectedSignatory.grade,
+        atas_nama: atasNama || null,
+        created_by: "Admin Desa",
+        timestamp: new Date().toISOString(),
+      },
+    };
 
     setShowConfirmation(false);
     setIsGenerating(true);
 
     try {
-    const response = await fetch("http://localhost:5000/surat/generate", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(submissionData),
-    });
+      const response = await fetch("http://localhost:5000/surat/generate", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(submissionData),
+      });
 
-    if (!response.ok) {
-      throw new Error("Gagal membuat surat");
+      if (!response.ok) {
+        throw new Error("Gagal membuat surat");
+      }
+
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+
+      const fileName = `${letterType}_${formData.nama}.docx`;
+      a.download = fileName;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+
+      // Simpan hasil ke state (opsional)
+      setGenerationResult({
+        success: true,
+        data: result,
+        message: result.message || "Surat berhasil dibuat",
+      });
+
+      if (onSubmit) {
+        onSubmit(submissionData);
+      }
+    } catch (error) {
+      console.error("Error generating letter:", error);
+      setGenerationResult({
+        success: false,
+        error: error.message || "Terjadi kesalahan saat membuat surat",
+        message: "Pembuatan surat gagal",
+      });
+    } finally {
+      setIsGenerating(false);
+      setShowResult(true);
     }
-
-    const blob = await response.blob();
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-
-    const fileName = `${letterType}_${formData.nama}.docx`;
-    a.download = fileName;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    window.URL.revokeObjectURL(url);
-
-    // Simpan hasil ke state (opsional)
-    setGenerationResult({
-      success: true,
-      data: result,
-      message: result.message || "Surat berhasil dibuat",
-    });
-
-    if (onSubmit) {
-      onSubmit(submissionData);
-    }
-  } catch (error) {
-    console.error("Error generating letter:", error);
-    setGenerationResult({
-      success: false,
-      error: error.message || "Terjadi kesalahan saat membuat surat",
-      message: "Pembuatan surat gagal",
-    });
-  } finally {
-    setIsGenerating(false);
-    setShowResult(true);
-  }
-};
+  };
 
   const handleCloseResult = () => {
     setShowResult(false);
@@ -238,19 +238,18 @@ export function DynamicForm({ letterType, onSubmit }) {
   };
 
   const handleGoToDownload = () => {
-  if (generationResult?.data?.downloadUrl) {
-    const downloadParams = new URLSearchParams({
-      url: generationResult.data.downloadUrl,
-      fileName: generationResult.data.fileName,
-      fileType: generationResult.data.fileType,
-      fileSize: generationResult.data.fileSize,
-      letterId: generationResult.data.letterId,
-    });
+    if (generationResult?.data?.downloadUrl) {
+      const downloadParams = new URLSearchParams({
+        url: generationResult.data.downloadUrl,
+        fileName: generationResult.data.fileName,
+        fileType: generationResult.data.fileType,
+        fileSize: generationResult.data.fileSize,
+        letterId: generationResult.data.letterId,
+      });
 
-    router.push(`/download?${downloadParams.toString()}`);
-  }
-};
-
+      router.push(`/download?${downloadParams.toString()}`);
+    }
+  };
 
   const handleRetry = () => {
     setShowResult(false);
@@ -301,10 +300,10 @@ export function DynamicForm({ letterType, onSubmit }) {
               <span className="text-red-500">*</span>
             </Label>
             <Select
-            value={selectedSignatory?.nip?.toString() || ""}
+              value={selectedSignatory?.nip?.toString() || ""}
               onValueChange={(value) => {
                 const signatory = signatories.find(
-                 (s) => s?.nip?.toString() === value
+                  (s) => s?.nip?.toString() === value
                 );
                 setSelectedSignatory(signatory);
                 setAtasNama("");
@@ -319,8 +318,7 @@ export function DynamicForm({ letterType, onSubmit }) {
                     grade: signatory.grade,
                   }));
                 }
-              }
-            }
+              }}
             >
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="Pilih pejabat penandatangan" />
@@ -536,7 +534,7 @@ export function DynamicForm({ letterType, onSubmit }) {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
             <div className="text-center mb-6">
-              {generationResult.success ? (
+              {!generationResult.success ? (
                 <div className="space-y-3">
                   <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto">
                     <CheckCircle className="h-8 w-8 text-green-600" />
@@ -545,7 +543,7 @@ export function DynamicForm({ letterType, onSubmit }) {
                     Surat Berhasil Dibuat!
                   </h3>
                   <p className="text-gray-600 text-sm">
-                    {generationResult.message}
+                    {/* {generationResult.message} */}
                   </p>
                 </div>
               ) : (
@@ -610,7 +608,8 @@ export function DynamicForm({ letterType, onSubmit }) {
                     className="flex-1 bg-blue-600 hover:bg-blue-700"
                   >
                     <ExternalLink className="h-4 w-4 mr-2" />
-                    Buka Halaman Download
+                    {/* Buka Halaman Download */}
+                    Buat Surat Baru
                   </Button>
                 </>
               ) : (
@@ -626,7 +625,8 @@ export function DynamicForm({ letterType, onSubmit }) {
                     onClick={handleRetry}
                     className="flex-1 bg-blue-600 hover:bg-blue-700"
                   >
-                    Coba Lagi
+                    {/* Coba Lagi */}
+                    Buat Surat Baru
                   </Button>
                 </>
               )}

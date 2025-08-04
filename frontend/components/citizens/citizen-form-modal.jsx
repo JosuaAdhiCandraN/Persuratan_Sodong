@@ -107,7 +107,6 @@ export function CitizenFormModal({
     jenis_pekerjaan: "",
     kesejahteraan: "",
     e_ktp: false,
-    tgl_update_kk: "",
     alamat_lengkap: "",
   });
   const [errors, setErrors] = useState({});
@@ -139,7 +138,7 @@ export function CitizenFormModal({
         jenis_pekerjaan: citizen.jenis_pekerjaan || "",
         kesejahteraan: citizen.kesejahteraan || "",
         e_ktp: citizen.e_ktp || false,
-        tanggal_update_kk: citizen.tgl_update_kk || "",
+        // tanggal_update_kk: citizen.tgl_update_kk || "",
         alamat_lengkap: citizen.alamat_lengkap || "",
       });
     } else {
@@ -166,7 +165,7 @@ export function CitizenFormModal({
         jenis_pekerjaan: "",
         kesejahteraan: "",
         e_ktp: false,
-        tanggal_update_kk: "",
+        // tanggal_update_kk: "",
         alamat_lengkap: "",
       });
     }
@@ -259,12 +258,12 @@ export function CitizenFormModal({
 
     const submitData = {
       ...formData,
-      umur: formData.umur ? (formData.umur) : null,
-      rt: formData.rt ? (formData.rt) : null,
-      rw: formData.rw ? (formData.rw) : null,
+      umur: formData.umur ? formData.umur : null,
+      rt: formData.rt ? formData.rt : null,
+      rw: formData.rw ? formData.rw : null,
     };
     // turn all SubmitData values to string
-    
+
     console.log("Submitting data:", JSON.stringify(submitData));
     // Dowload json while submitting
     onSubmit(submitData);
@@ -689,7 +688,7 @@ export function CitizenFormModal({
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
+                {/* <div className="space-y-2">
                   <Label htmlFor="tgl_update_kk">Tanggal Update KK</Label>
                   <Input
                     id="tgl_update_kk"
@@ -698,7 +697,7 @@ export function CitizenFormModal({
                     value={formData.tgl_update_kk}
                     onChange={handleInputChange}
                   />
-                </div>
+                </div> */}
 
                 <div className="flex items-center space-x-2 pt-6">
                   <Checkbox
