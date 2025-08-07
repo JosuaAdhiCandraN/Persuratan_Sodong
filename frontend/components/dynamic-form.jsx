@@ -204,8 +204,7 @@ export function DynamicForm({ letterType, onSubmit }) {
       // Simpan hasil ke state (opsional)
       setGenerationResult({
         success: true,
-        data: result,
-        message: result.message || "Surat berhasil dibuat",
+        message: "Surat berhasil dibuat",
       });
 
       if (onSubmit) {
