@@ -12,13 +12,13 @@ import { toast } from "@/hooks/use-toast";
 // Mock API functions
   const mockAPI = {
   getSignatories: async () => {
-    const res = await fetch('http://localhost:5000/desa/call/pejabat');
+    const res = await fetch('${process.env.NEXT_PUBLIC_API_URL}/desa/call/pejabat');
     if (!res.ok) throw new Error('Gagal memuat data pejabat');
     return await res.json();
   },
 
   createSignatory: async (data) => {
-    const res = await fetch('http://localhost:5000/desa/create/pejabat', {
+    const res = await fetch('${process.env.NEXT_PUBLIC_API_URL}/desa/create/pejabat', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
@@ -28,7 +28,7 @@ import { toast } from "@/hooks/use-toast";
   },
 
  updateSignatory: async (id, data) => {
-  const res = await fetch(`http://localhost:5000/desa/update/pejabat/${id}`, {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/desa/update/pejabat/${id}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data),
@@ -38,7 +38,7 @@ import { toast } from "@/hooks/use-toast";
 },
 
 deleteSignatory: async (id) => {
-  const res = await fetch(`http://localhost:5000/desa/delete/pejabat/${id}`, {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/desa/delete/pejabat/${id}`, {
     method: 'DELETE',
   });
   if (!res.ok) throw new Error('Gagal menghapus pejabat');

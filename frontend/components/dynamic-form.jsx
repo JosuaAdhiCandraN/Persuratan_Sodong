@@ -73,7 +73,7 @@ export function DynamicForm({ letterType, onSubmit }) {
   useEffect(() => {
     const fetchSignatories = async () => {
       try {
-        const res = await fetch("http://localhost:5000/desa/call/pejabat");
+        const res = await fetch("${process.env.NEXT_PUBLIC_API_URL}/desa/call/pejabat");
         if (!res.ok) throw new Error("Gagal memuat data pejabat");
         const data = await res.json();
         setSignatories(data);
@@ -97,7 +97,7 @@ export function DynamicForm({ letterType, onSubmit }) {
 
   const handlePejabatSelect = async (e) => {
     const nip = e.target.value;
-    const res = await fetch(`http://localhost:5000/desa/call/pejabat/${nip}`);
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/desa/call/pejabat/${nip}`);
     const data = await res.json();
     setFormData((prev) => ({
       ...prev,
@@ -111,13 +111,13 @@ export function DynamicForm({ letterType, onSubmit }) {
   const handleSearch = async (nik) => {
     try {
       const res = await fetch(
-        `http://localhost:5000/surat/${letterType.trim()}/${nik}`
+        `${process.env.NEXT_PUBLIC_API_URL}/surat/${letterType.trim()}/${nik}`
       );
       if (!res.ok) {
         alert("Data tidak ditemukan");
         console.log(
           "Fetching from:",
-          `http://localhost:5000/surat/${letterType}/${nik}`
+          `${process.env.NEXT_PUBLIC_API_URL}/surat/${letterType}/${nik}`
         );
         return;
       }
@@ -177,7 +177,7 @@ export function DynamicForm({ letterType, onSubmit }) {
     setIsGenerating(true);
 
     try {
-      const response = await fetch("http://localhost:5000/surat/generate", {
+      const response = await fetch("${process.env.NEXT_PUBLIC_API_URL}/surat/generate", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

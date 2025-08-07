@@ -12,14 +12,14 @@ import { toast } from "@/hooks/use-toast";
 // Mock API functions
 const mockAPI = {
   getCitizens: async () => {
-    const res = await fetch('http://localhost:5000/warga');
+    const res = await fetch('${process.env.NEXT_PUBLIC_API_URL}/warga');
     if (!res.ok) {
       throw new Error('Gagal mengambil data warga');
     }
     return await res.json();
   }, 
   createCitizen: async (formData) => {
-    const res = await fetch('http://localhost:5000/create/warga', {
+    const res = await fetch('${process.env.NEXT_PUBLIC_API_URL}/create/warga', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(formData),
@@ -28,9 +28,9 @@ const mockAPI = {
     return await res.json();
   },
 
-  // ✅ PUT http://localhost:5000/warga/:nik
+  // ✅ PUT ${process.env.NEXT_PUBLIC_API_URL}/warga/:nik
   updateCitizen: async (nik, formData) => {
-    const res = await fetch(`http://localhost:5000/update/warga/${nik}`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/update/warga/${nik}`, {
       method: 'PUT', // karena NestJS-mu pakai @Put
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(formData),
